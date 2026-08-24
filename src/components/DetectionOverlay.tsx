@@ -35,7 +35,7 @@ export const DetectionOverlay: React.FC<DetectionOverlayProps> = ({
             <span className="font-bold uppercase tracking-wider">Visual Inspection</span>
           </div>
           <span className="font-mono text-[11px] text-graphite-muted hidden sm:inline">
-            [RGB VISUAL ANALYSIS]
+            [RGB IMAGE ANALYSIS]
           </span>
         </div>
 

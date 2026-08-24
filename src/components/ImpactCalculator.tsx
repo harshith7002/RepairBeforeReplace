@@ -74,7 +74,7 @@ export const ImpactCalculator: React.FC<ImpactCalculatorProps> = ({ impact }) =>
         {/* Metric 3 */}
         <div className="bg-charcoal-900 p-5 rounded-lg border border-graphite-border relative overflow-hidden">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="font-mono text-xs uppercase">Landfill Diversion</span>
+            <span className="font-mono text-xs uppercase">Product Waste Diverted</span>
             <Trash2 className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="flex items-baseline space-x-1">
@@ -83,14 +83,14 @@ export const ImpactCalculator: React.FC<ImpactCalculatorProps> = ({ impact }) =>
             </span>
           </div>
           <p className="text-[11px] text-slate-400 mt-2">
-            100% diversion from immediate municipal waste disposal.
+            100% components kept in active use.
           </p>
         </div>
 
       </div>
 
       <div className="bg-charcoal-900/60 p-3 rounded border border-graphite-border/70 flex items-center justify-between text-xs text-slate-400">
-        <span>* Illustrative prototype estimate based on replacement-vs-repair lifecycle assumptions.</span>
+        <span>* Illustrative prototype estimate based on repair-vs-replacement lifecycle assumptions.</span>
         <span className="font-mono text-emerald-400 font-bold">Goal: Extend Product Lifespan</span>
       </div>
 

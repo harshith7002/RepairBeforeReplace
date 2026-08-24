@@ -198,7 +198,7 @@ export const DiagnosticWorkspace: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Cpu className="w-5 h-5 text-industrial-orange" />
             <span className="font-mono text-xs text-graphite-muted uppercase tracking-widest">
-              Visual Repair Assistant
+              REPAIR WORKSTATION // LIVE INSPECTION
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-1">

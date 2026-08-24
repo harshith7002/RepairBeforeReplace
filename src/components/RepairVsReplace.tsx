@@ -145,18 +145,18 @@ export const RepairVsReplace: React.FC<RepairVsReplaceProps> = ({
                   {replaceCost}
                 </span>
                 <span className="text-xs text-slate-400 block mt-0.5">
-                  {replaceText || 'Includes new item purchase, delivery & disposal fees'}
+                  {replaceText || 'Includes replacement item purchase, delivery and setup.'}
                 </span>
               </div>
 
               <div className="space-y-2 text-xs text-slate-400 pt-2 border-t border-graphite-border/70">
                 <div className="flex items-center space-x-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
-                  <span>Requires waiting for delivery / purchase sourcing</span>
+                  <span>Requires waiting for delivery / retail sourcing</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
-                  <span>{replacementDisposalNote || 'Creates unnecessary material scrap and disposal waste'}</span>
+                  <span>{replacementDisposalNote || 'Creates unnecessary component scrap and disposal waste'}</span>
                 </div>
               </div>
             </div>
@@ -164,7 +164,7 @@ export const RepairVsReplace: React.FC<RepairVsReplaceProps> = ({
 
           <div className="pt-4 border-t border-graphite-border/60 text-center">
             <span className="font-mono text-xs text-slate-500">
-              Not recommended for fixable {issueName ? `"${issueName}"` : 'component issues'}
+              Not recommended for a minor {issueName ? `"${issueName}"` : 'component'} adjustment.
             </span>
           </div>
         </div>
