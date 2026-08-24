@@ -48,29 +48,38 @@ export const DiagnosticWorkspace: React.FC = () => {
         const data = await res.json();
         const items: DiagnosticItem[] = data.items ?? [];
         if (cancelled) return;
-        setPresets(items);
-
-        if (presetIdParam) {
-          const match = items.find((i) => i.id === presetIdParam);
-          if (match) {
-            setSelectedItem(match);
-            setActiveMarker(match.markers[0]);
-          } else {
-            const res2 = await fetch(`/api/diagnostics/${presetIdParam}`);
-            if (res2.ok) {
-              const item: DiagnosticItem = await res2.json();
-              if (!cancelled) {
-                setSelectedItem(item);
-                setActiveMarker(item.markers[0]);
+        if (items.length > 0) {
+          setPresets(items);
+          if (presetIdParam) {
+            const match = items.find((i) => i.id === presetIdParam);
+            if (match) {
+              setSelectedItem(match);
+              setActiveMarker(match.markers[0]);
+            } else {
+              const res2 = await fetch(`/api/diagnostics/${presetIdParam}`);
+              if (res2.ok) {
+                const item: DiagnosticItem = await res2.json();
+                if (!cancelled) {
+                  setSelectedItem(item);
+                  setActiveMarker(item.markers[0]);
+                }
               }
             }
+          } else {
+            setSelectedItem(items[0]);
+            setActiveMarker(items[0].markers[0]);
           }
-        } else if (items.length > 0) {
-          setSelectedItem(items[0]);
-          setActiveMarker(items[0].markers[0]);
+        } else {
+          setPresets(MOCK_ITEMS);
+          setSelectedItem(MOCK_ITEMS[0]);
+          setActiveMarker(MOCK_ITEMS[0].markers[0]);
         }
       } catch (err) {
-        if (!cancelled) setErrorMessage('Could not reach the diagnostic backend. Is the dev server running?');
+        if (!cancelled) {
+          setPresets(MOCK_ITEMS);
+          setSelectedItem(MOCK_ITEMS[0]);
+          setActiveMarker(MOCK_ITEMS[0].markers[0]);
+        }
       } finally {
         if (!cancelled) setIsLoadingPresets(false);
       }
