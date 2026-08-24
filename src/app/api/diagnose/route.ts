@@ -66,12 +66,16 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
 
     const id = randomUUID();
-    const ext = extensionFor(file.type, file.name || '');
-    const savedFileName = `${id}.${ext}`;
-
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-    await fs.writeFile(path.join(UPLOAD_DIR, savedFileName), buffer);
-    const imageUrl = `/uploads/${savedFileName}`;
+    let imageUrl = `data:${file.type};base64,${buffer.toString('base64')}`;
+    try {
+      const ext = extensionFor(file.type, file.name || '');
+      const savedFileName = `${id}.${ext}`;
+      await fs.mkdir(UPLOAD_DIR, { recursive: true });
+      await fs.writeFile(path.join(UPLOAD_DIR, savedFileName), buffer);
+      imageUrl = `/uploads/${savedFileName}`;
+    } catch {
+      // Read-only serverless filesystem on Netlify/Vercel — imageUrl stays base64 Data URI
+    }
 
     const categoryHintStr = typeof categoryHint === 'string' && categoryHint ? categoryHint : undefined;
     const notesStr = typeof notes === 'string' && notes ? notes : undefined;

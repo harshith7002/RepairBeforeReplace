@@ -4,14 +4,9 @@ import { DiagnosticItem } from '../types';
 import { MOCK_ITEMS } from '../data/mockData';
 
 /**
- * Lightweight file-backed persistence layer.
- *
- * There is no external database in this project — diagnostic records are stored as a
- * single JSON document on disk (data/diagnostics.json). That's a deliberate choice: it
- * keeps the project runnable with zero extra setup (no DB server, no native bindings to
- * compile on Windows) while still giving every API route real, durable, shared state
- * across requests and server restarts. Writes are serialized through an in-process lock
- * so concurrent requests can't corrupt the file.
+ * Safe, hybrid persistence layer.
+ * Works seamlessly in-memory on read-only serverless platforms (Netlify, Vercel)
+ * and syncs to disk when local filesystem writing is supported.
  */
 
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -22,41 +17,40 @@ function seedItems(): DiagnosticItem[] {
   return MOCK_ITEMS.map((item, idx) => ({
     ...item,
     sourceType: 'seed' as const,
-    // Stagger seed timestamps so newest-first sorting matches the original demo order.
     createdAt: new Date(now - (MOCK_ITEMS.length - idx) * 60 * 60 * 1000).toISOString(),
     completedSteps: [],
   }));
 }
 
-async function ensureFile(): Promise<void> {
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    await fs.writeFile(DATA_FILE, JSON.stringify(seedItems(), null, 2), 'utf-8');
-  }
-}
+// Global in-memory cache initialized with seed items
+let memoryStore: DiagnosticItem[] = seedItems();
+let isInitialized = false;
 
-async function readAllRaw(): Promise<DiagnosticItem[]> {
-  await ensureFile();
+async function ensureMemoryInitialized(): Promise<void> {
+  if (isInitialized) return;
+  isInitialized = true;
   try {
     const raw = await fs.readFile(DATA_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      memoryStore = parsed;
+    }
   } catch {
-    // Corrupt or unreadable file — fail safe to an empty store rather than crashing routes.
-    return [];
+    // Disk read failed or read-only filesystem (Netlify/Vercel) — memoryStore is already seeded
   }
 }
 
-async function writeAllRaw(items: DiagnosticItem[]): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  const tmpFile = `${DATA_FILE}.tmp`;
-  await fs.writeFile(tmpFile, JSON.stringify(items, null, 2), 'utf-8');
-  await fs.rename(tmpFile, DATA_FILE);
+async function safeWriteDisk(items: DiagnosticItem[]): Promise<void> {
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    const tmpFile = `${DATA_FILE}.tmp`;
+    await fs.writeFile(tmpFile, JSON.stringify(items, null, 2), 'utf-8');
+    await fs.rename(tmpFile, DATA_FILE);
+  } catch {
+    // Read-only filesystem on Netlify/Vercel — safely ignore disk write error
+  }
 }
 
-// Simple async mutex: chain every write behind the previous one.
 let writeLock: Promise<unknown> = Promise.resolve();
 function withLock<T>(fn: () => Promise<T>): Promise<T> {
   const run = writeLock.then(fn, fn);
@@ -74,13 +68,15 @@ export interface ListFilter {
 }
 
 export async function readAll(): Promise<DiagnosticItem[]> {
-  return readAllRaw();
+  await ensureMemoryInitialized();
+  return [...memoryStore];
 }
 
 export async function list(filter: ListFilter = {}): Promise<DiagnosticItem[]> {
-  let items = await readAllRaw();
+  await ensureMemoryInitialized();
+  let items = [...memoryStore];
 
-  items = items.slice().sort((a, b) => {
+  items.sort((a, b) => {
     const ta = a.createdAt ? Date.parse(a.createdAt) : 0;
     const tb = b.createdAt ? Date.parse(b.createdAt) : 0;
     return tb - ta;
@@ -109,15 +105,16 @@ export async function list(filter: ListFilter = {}): Promise<DiagnosticItem[]> {
 }
 
 export async function getById(id: string): Promise<DiagnosticItem | undefined> {
-  const items = await readAllRaw();
-  return items.find((i) => i.id === id);
+  await ensureMemoryInitialized();
+  return memoryStore.find((i) => i.id === id);
 }
 
 export async function insert(item: DiagnosticItem): Promise<DiagnosticItem> {
   return withLock(async () => {
-    const items = await readAllRaw();
-    items.push(item);
-    await writeAllRaw(items);
+    await ensureMemoryInitialized();
+    // Add to top of memory store
+    memoryStore = [item, ...memoryStore];
+    await safeWriteDisk(memoryStore);
     return item;
   });
 }
@@ -127,22 +124,22 @@ export async function update(
   patch: Partial<DiagnosticItem>
 ): Promise<DiagnosticItem | undefined> {
   return withLock(async () => {
-    const items = await readAllRaw();
-    const idx = items.findIndex((i) => i.id === id);
+    await ensureMemoryInitialized();
+    const idx = memoryStore.findIndex((i) => i.id === id);
     if (idx === -1) return undefined;
-    items[idx] = { ...items[idx], ...patch };
-    await writeAllRaw(items);
-    return items[idx];
+    memoryStore[idx] = { ...memoryStore[idx], ...patch };
+    await safeWriteDisk(memoryStore);
+    return memoryStore[idx];
   });
 }
 
 export async function remove(id: string): Promise<boolean> {
   return withLock(async () => {
-    const items = await readAllRaw();
-    const idx = items.findIndex((i) => i.id === id);
+    await ensureMemoryInitialized();
+    const idx = memoryStore.findIndex((i) => i.id === id);
     if (idx === -1) return false;
-    items.splice(idx, 1);
-    await writeAllRaw(items);
+    memoryStore.splice(idx, 1);
+    await safeWriteDisk(memoryStore);
     return true;
   });
 }
