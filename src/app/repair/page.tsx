@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { RepairGuideView } from '@/components/RepairGuideView';
 
 export const metadata = {
@@ -5,5 +6,9 @@ export const metadata = {
 };
 
 export default function RepairPage() {
-  return <RepairGuideView />;
+  return (
+    <Suspense fallback={null}>
+      <RepairGuideView />
+    </Suspense>
+  );
 }

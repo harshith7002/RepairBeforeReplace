@@ -32,3 +32,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local diagnostic database & uploaded photos (auto-created at runtime)
+/data/*.json
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/data/.gitkeep

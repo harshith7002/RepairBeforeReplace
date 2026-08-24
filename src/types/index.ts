@@ -47,10 +47,20 @@ export interface ImpactMetrics {
   waterSavedLiters?: number;
 }
 
+export type DiagnosticCategory =
+  | 'Appliances'
+  | 'Electronics'
+  | 'Bicycles'
+  | 'Tools'
+  | 'Mechanical'
+  | 'Furniture';
+
+export type DiagnosisSource = 'seed' | 'heuristic' | 'ai';
+
 export interface DiagnosticItem {
   id: string;
   name: string;
-  category: 'Appliances' | 'Electronics' | 'Bicycles' | 'Tools' | 'Mechanical' | 'Furniture';
+  category: DiagnosticCategory;
   modelNumber: string;
   thumbnailUrl: string;
   fullImageUrl: string;
@@ -75,4 +85,10 @@ export interface DiagnosticItem {
   repairSteps: RepairStep[];
   impact: ImpactMetrics;
   diagnosedDate: string;
+
+  // --- Backend-managed metadata (populated once the diagnosis is served by the API) ---
+  sourceType?: DiagnosisSource;
+  createdAt?: string; // ISO timestamp
+  completedSteps?: number[]; // indices of repair steps the user has marked done
+  userNotes?: string;
 }

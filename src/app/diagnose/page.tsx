@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { DiagnosticWorkspace } from '@/components/DiagnosticWorkspace';
 
 export const metadata = {
@@ -5,5 +6,9 @@ export const metadata = {
 };
 
 export default function DiagnosePage() {
-  return <DiagnosticWorkspace />;
+  return (
+    <Suspense fallback={null}>
+      <DiagnosticWorkspace />
+    </Suspense>
+  );
 }

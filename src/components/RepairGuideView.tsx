@@ -1,28 +1,109 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { WASHING_MACHINE_DEMO } from '../data/mockData';
-import { 
-  ArrowLeft, ArrowRight, Wrench, Clock, ShieldAlert, 
-  CheckCircle2, AlertOctagon, Lightbulb, RotateCcw, Sparkles 
+import { useRouter, useSearchParams } from 'next/navigation';
+import { DiagnosticItem } from '../types';
+import {
+  ArrowLeft, ArrowRight, Wrench, Clock, ShieldAlert,
+  CheckCircle2, AlertOctagon, Lightbulb, Loader2,
 } from 'lucide-react';
 
 export const RepairGuideView: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+  const [item, setItem] = useState<DiagnosticItem | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
-  const item = WASHING_MACHINE_DEMO;
-  const steps = item.repairSteps;
-  const currentStep = steps[currentStepIndex];
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setErrorMessage(null);
+      try {
+        const url = id ? `/api/diagnostics/${id}` : null;
+        if (!url) {
+          // No id supplied — fall back to the most recent diagnosis on record.
+          const listRes = await fetch('/api/diagnostics?limit=1', { cache: 'no-store' });
+          if (!listRes.ok) throw new Error('Failed to load a diagnosis to repair.');
+          const listData = await listRes.json();
+          const first: DiagnosticItem | undefined = listData.items?.[0];
+          if (!first) {
+            if (!cancelled) {
+              setItem(null);
+              setIsLoading(false);
+            }
+            return;
+          }
+          if (!cancelled) {
+            setItem(first);
+            setCompletedSteps(first.completedSteps ?? []);
+            setCurrentStepIndex(0);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('That diagnosis record could not be found.');
+        const data: DiagnosticItem = await res.json();
+        if (!cancelled) {
+          setItem(data);
+          setCompletedSteps(data.completedSteps ?? []);
+          setCurrentStepIndex(0);
+        }
+      } catch (err) {
+        if (!cancelled) setErrorMessage(err instanceof Error ? err.message : 'Failed to load repair guide.');
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [id]);
+
+  const persistProgress = async (nextCompleted: number[]) => {
+    if (!item) return;
+    try {
+      await fetch(`/api/diagnostics/${item.id}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ completedSteps: nextCompleted }),
+      });
+    } catch {
+      // Best-effort persistence — progress still works locally even if this fails.
+    }
+  };
 
   const handleNext = () => {
+    if (!item) return;
+    const steps = item.repairSteps;
+    let next = completedSteps;
     if (!completedSteps.includes(currentStepIndex)) {
-      setCompletedSteps([...completedSteps, currentStepIndex]);
+      next = [...completedSteps, currentStepIndex];
+      setCompletedSteps(next);
+      persistProgress(next);
     }
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
     }
+  };
+
+  const handleFinish = () => {
+    if (!item) return;
+    if (!completedSteps.includes(currentStepIndex)) {
+      const next = [...completedSteps, currentStepIndex];
+      setCompletedSteps(next);
+      persistProgress(next);
+    }
+    router.push('/history');
   };
 
   const handlePrev = () => {
@@ -31,14 +112,45 @@ export const RepairGuideView: React.FC = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-24 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
+      </div>
+    );
+  }
+
+  if (errorMessage || !item) {
+    return (
+      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-4 text-center">
+        <AlertOctagon className="w-10 h-10 text-amber-400 mx-auto" />
+        <h1 className="text-xl font-bold text-white">
+          {errorMessage || 'No diagnosis available yet.'}
+        </h1>
+        <p className="text-sm text-slate-400">
+          Run a diagnosis first to generate a repair manual.
+        </p>
+        <Link
+          href="/diagnose"
+          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded bg-industrial-orange hover:bg-orange-600 text-white font-mono text-xs font-bold"
+        >
+          <span>Go to Diagnostic Workstation →</span>
+        </Link>
+      </div>
+    );
+  }
+
+  const steps = item.repairSteps;
+  const currentStep = steps[currentStepIndex];
+
   return (
     <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      
+
       {/* Top Breadcrumb & Navigation Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-graphite-border pb-6">
         <div>
           <Link
-            href="/diagnose"
+            href={`/diagnose?id=${item.id}`}
             className="inline-flex items-center space-x-2 text-xs font-mono text-slate-400 hover:text-industrial-orange transition-colors mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -85,7 +197,7 @@ export const RepairGuideView: React.FC = () => {
             Mandatory Safety Precaution:
           </span>
           <p className="leading-relaxed">
-            {item.safetyWarnings[0]} Ensure all water supply spigots are fully shut off before loosening the drain filter cap.
+            {item.safetyWarnings[0]}
           </p>
         </div>
       </div>
@@ -112,7 +224,7 @@ export const RepairGuideView: React.FC = () => {
         </div>
       </div>
 
-      {/* STEP PROGRESS BAR (01 / 05) */}
+      {/* STEP PROGRESS BAR */}
       <div className="bg-charcoal-800 border border-graphite-border rounded-lg p-4 shadow-workstation space-y-3">
         <div className="flex items-center justify-between text-xs font-mono">
           <span className="text-industrial-orange font-bold uppercase tracking-wider">
@@ -124,7 +236,7 @@ export const RepairGuideView: React.FC = () => {
         </div>
 
         {/* Visual Progress Segments */}
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}>
           {steps.map((s, idx) => {
             const isActive = idx === currentStepIndex;
             const isDone = completedSteps.includes(idx) || idx < currentStepIndex;
@@ -152,9 +264,9 @@ export const RepairGuideView: React.FC = () => {
         </div>
       </div>
 
-      {/* MAIN STEP INTERFACE CANVAS (2 Cols Desktop Viewport) */}
+      {/* MAIN STEP INTERFACE CANVAS */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Left Visual Diagram/Photo (6 Cols on LG) */}
         <div className="lg:col-span-6 bg-charcoal-900 border border-graphite-border rounded-lg overflow-hidden shadow-workstation">
           <div className="bg-charcoal-800 border-b border-graphite-border px-4 py-2 flex items-center justify-between">
@@ -172,7 +284,7 @@ export const RepairGuideView: React.FC = () => {
               alt={currentStep.title}
               className="w-full h-full object-cover"
             />
-            
+
             <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900 via-transparent to-transparent opacity-80" />
 
             <div className="absolute bottom-4 left-4 right-4 bg-charcoal-900/90 border border-graphite-border p-3 rounded backdrop-blur-md">
@@ -186,9 +298,9 @@ export const RepairGuideView: React.FC = () => {
 
         {/* Right Step Guidance & Next Action (6 Cols on LG) */}
         <div className="lg:col-span-6 space-y-6">
-          
+
           <div className="bg-charcoal-800 border border-graphite-border rounded-lg p-6 shadow-workstation space-y-6">
-            
+
             {/* Step Header */}
             <div>
               <div className="flex items-center space-x-2">
@@ -261,13 +373,13 @@ export const RepairGuideView: React.FC = () => {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               ) : (
-                <Link
-                  href="/history"
+                <button
+                  onClick={handleFinish}
                   className="inline-flex items-center space-x-2 px-6 py-2.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition-all shadow-sm"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Finish & Log Repair</span>
-                </Link>
+                </button>
               )}
             </div>
 

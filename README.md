@@ -26,6 +26,45 @@ By analyzing photos or videos of damaged physical objects, RepairBeforeReplace e
 
 ---
 
+## 🧠 Backend
+
+RepairBeforeReplace now ships with a real, working backend — uploads, diagnoses, and
+history all persist across restarts, with no external database or extra services to
+stand up.
+
+- **Storage:** every diagnosis is written to `data/diagnostics.json` (auto-created and
+  seeded with the four original demo items on first run). Uploaded photos are saved to
+  `public/uploads/`. Both are gitignored — they're your local runtime data.
+- **API routes** (`src/app/api/**`):
+  - `POST /api/diagnose` — upload a photo (`multipart/form-data`, field `image`, plus
+    optional `category` and `notes`), get back a full diagnosis.
+  - `GET /api/diagnostics` — list history (`?category=`, `?search=`, `?limit=`).
+  - `GET /api/diagnostics/:id` — fetch one record.
+  - `PATCH /api/diagnostics/:id` — save repair-guide progress (`{ completedSteps }`).
+  - `DELETE /api/diagnostics/:id` — remove a record (and its uploaded photo, if local).
+  - `GET /api/stats` — aggregate totals (savings, CO₂, materials) across all diagnoses.
+- **Diagnosis engine** (`src/server/`): every upload is run through
+  `runDiagnosis()`, which tries a real AI vision call first (see below) and always has a
+  deterministic, dependency-free knowledge-base engine (`heuristicEngine.ts` +
+  `knowledgeBase.ts`, 12 hand-authored failure profiles across all 6 categories) as a
+  guaranteed fallback — so the app is fully functional with zero configuration.
+
+### Optional: real AI vision diagnosis
+
+Set an Anthropic API key and every upload is diagnosed by an actual vision-capable
+Claude model instead of the knowledge-base engine:
+
+```bash
+cp .env.example .env.local
+# then edit .env.local and set ANTHROPIC_API_KEY=sk-ant-...
+```
+
+No key needed to run the app — this is purely additive. When it's set, diagnoses are
+tagged "AI Vision Diagnosis" in the UI; without it, they're tagged "Knowledge-Base
+Match". `ANTHROPIC_MODEL` can override the default model.
+
+---
+
 ## 🚀 Quick Start
 
 ### 1. Clone & Install Dependencies
@@ -51,7 +90,9 @@ npm run start
 
 ## 💻 Tech Stack
 
-- **Framework:** Next.js 14 (App Router) & React 18
+- **Framework:** Next.js 14 (App Router, Route Handlers) & React 18
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS & Lucide Icons
 - **Animation:** Framer Motion & CSS SVG Telemetry Streams
+- **Backend:** Next.js Route Handlers + a file-backed JSON store — no external DB
+- **AI (optional):** Anthropic Claude vision API, called directly via `fetch` (no SDK dependency)
