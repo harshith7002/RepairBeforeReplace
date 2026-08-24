@@ -9,21 +9,18 @@ import {
   SecondaryPossibility,
 } from '../types';
 
-/**
- * Optional real AI vision diagnosis, used only when ANTHROPIC_API_KEY is set in the
- * environment. Talks to the Anthropic Messages API directly over fetch (no SDK
- * dependency needed — Next.js already ships a Node runtime with a global fetch), sending
- * the uploaded photo plus a strict JSON-output prompt. Any failure — missing key, network
- * error, malformed response — resolves to `null` so the caller can fall back to the
- * deterministic heuristic engine and the app keeps working with zero configuration.
- */
-
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
-const DEFAULT_MODEL = 'claude-3-5-sonnet-20241022';
+const DEFAULT_ANTHROPIC_MODEL = 'claude-3-5-sonnet-20241022';
+const DEFAULT_GEMINI_MODEL = 'gemini-1.5-flash';
+const DEFAULT_OPENAI_MODEL = 'gpt-4o-mini';
 const REQUEST_TIMEOUT_MS = 30000;
 
 export function isAiEngineAvailable(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
+  return Boolean(
+    process.env.ANTHROPIC_API_KEY ||
+    process.env.GEMINI_API_KEY ||
+    process.env.OPENAI_API_KEY
+  );
 }
 
 function buildPrompt(notes?: string, categoryHint?: string): string {
@@ -67,14 +64,6 @@ ${notes ? `The user described the problem as: "${notes}"` : ''}
 Respond with ONLY the JSON object, no other text.`;
 }
 
-async function safeText(res: Response): Promise<string> {
-  try {
-    return await res.text();
-  } catch {
-    return '<unreadable body>';
-  }
-}
-
 function extractJson(text: string): Record<string, unknown> | null {
   const trimmed = text.trim();
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
@@ -112,12 +101,6 @@ function verdictForScore(score: number): string {
   return 'Repair may not be cost-effective — consider professional evaluation';
 }
 
-/**
- * Coerces (and where necessary, backfills) a raw parsed AI response into a complete,
- * internally-consistent GeneratedDiagnosis. Scores/verdict/savings are always
- * recomputed server-side from the underlying numbers rather than trusted verbatim from
- * the model, so the displayed math always adds up.
- */
 function normalizeAiResult(raw: Record<string, unknown>): GeneratedDiagnosis {
   const categoryRaw = asString(raw.category, 'Electronics');
   const category = (CATEGORIES.find((c) => c.toLowerCase() === categoryRaw.toLowerCase()) ??
@@ -268,54 +251,129 @@ function normalizeAiResult(raw: Record<string, unknown>): GeneratedDiagnosis {
   };
 }
 
-export async function runAiDiagnosis(input: DiagnoseInput): Promise<GeneratedDiagnosis | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || !input.imageBytes || input.imageBytes.length === 0) return null;
-
-  const model = process.env.ANTHROPIC_MODEL || DEFAULT_MODEL;
+// 1. Anthropic Claude Provider
+async function runAnthropic(apiKey: string, input: DiagnoseInput): Promise<GeneratedDiagnosis | null> {
+  const model = process.env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL;
   const mediaType = input.mimeType && input.mimeType.startsWith('image/') ? input.mimeType : 'image/jpeg';
-  const base64 = input.imageBytes.toString('base64');
+  const base64 = input.imageBytes!.toString('base64');
 
-  try {
-    const res = await fetch(ANTHROPIC_API_URL, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: 2200,
-        temperature: 0.4,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-              { type: 'text', text: buildPrompt(input.notes, input.categoryHint) },
-            ],
-          },
-        ],
-      }),
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    });
+  const res = await fetch(ANTHROPIC_API_URL, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 2200,
+      temperature: 0.4,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            { type: 'text', text: buildPrompt(input.notes, input.categoryHint) },
+          ],
+        },
+      ],
+    }),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
 
-    if (!res.ok) {
-      console.error('[aiEngine] Anthropic API error', res.status, await safeText(res));
-      return null;
-    }
+  if (!res.ok) return null;
+  const data = (await res.json()) as { content?: Array<{ type: string; text?: string }> };
+  const textBlock = Array.isArray(data.content) ? data.content.find((b) => b.type === 'text') : undefined;
+  if (!textBlock?.text) return null;
+  const parsed = extractJson(textBlock.text);
+  return parsed ? normalizeAiResult(parsed) : null;
+}
 
-    const data = (await res.json()) as { content?: Array<{ type: string; text?: string }> };
-    const textBlock = Array.isArray(data.content) ? data.content.find((b) => b.type === 'text') : undefined;
-    if (!textBlock?.text) return null;
+// 2. Google Gemini Provider
+async function runGemini(apiKey: string, input: DiagnoseInput): Promise<GeneratedDiagnosis | null> {
+  const model = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL;
+  const mediaType = input.mimeType && input.mimeType.startsWith('image/') ? input.mimeType : 'image/jpeg';
+  const base64 = input.imageBytes!.toString('base64');
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-    const parsed = extractJson(textBlock.text);
-    if (!parsed) return null;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            { inlineData: { mimeType: mediaType, data: base64 } },
+            { text: buildPrompt(input.notes, input.categoryHint) },
+          ],
+        },
+      ],
+    }),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
 
-    return normalizeAiResult(parsed);
-  } catch (err) {
-    console.error('[aiEngine] AI diagnosis failed, falling back to heuristic engine', err);
-    return null;
+  if (!res.ok) return null;
+  const data = (await res.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) return null;
+  const parsed = extractJson(text);
+  return parsed ? normalizeAiResult(parsed) : null;
+}
+
+// 3. OpenAI GPT-4o Provider
+async function runOpenAI(apiKey: string, input: DiagnoseInput): Promise<GeneratedDiagnosis | null> {
+  const model = process.env.OPENAI_MODEL || DEFAULT_OPENAI_MODEL;
+  const mediaType = input.mimeType && input.mimeType.startsWith('image/') ? input.mimeType : 'image/jpeg';
+  const base64 = input.imageBytes!.toString('base64');
+  const dataUrl = `data:${mediaType};base64,${base64}`;
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 2200,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'image_url', image_url: { url: dataUrl } },
+            { type: 'text', text: buildPrompt(input.notes, input.categoryHint) },
+          ],
+        },
+      ],
+    }),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
+
+  if (!res.ok) return null;
+  const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) return null;
+  const parsed = extractJson(text);
+  return parsed ? normalizeAiResult(parsed) : null;
+}
+
+export async function runAiDiagnosis(input: DiagnoseInput): Promise<GeneratedDiagnosis | null> {
+  if (!input.imageBytes || input.imageBytes.length === 0) return null;
+
+  if (process.env.ANTHROPIC_API_KEY) {
+    const res = await runAnthropic(process.env.ANTHROPIC_API_KEY, input);
+    if (res) return res;
   }
+
+  if (process.env.GEMINI_API_KEY) {
+    const res = await runGemini(process.env.GEMINI_API_KEY, input);
+    if (res) return res;
+  }
+
+  if (process.env.OPENAI_API_KEY) {
+    const res = await runOpenAI(process.env.OPENAI_API_KEY, input);
+    if (res) return res;
+  }
+
+  return null;
 }
