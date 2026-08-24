@@ -44,11 +44,15 @@ export interface GeneratedDiagnosis {
   markers: ComponentMarker[];
   repairCostRange: string;
   replaceCost: string;
+  replaceText?: string;
+  replacementDisposalNote?: string;
   potentialSavings: string;
   estimatedTime: string;
   difficulty: 'Easy' | 'Moderate' | 'Advanced' | 'Professional Recommended';
   toolsRequired: { name: string; spec?: string }[];
   safetyWarnings: string[];
+  safetyCautionType?: string;
+  safetyCautionDesc?: string;
   repairSteps: RepairStep[];
   impact: ImpactMetrics;
   photoUrl: string;
