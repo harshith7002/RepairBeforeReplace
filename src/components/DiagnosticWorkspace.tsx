@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DiagnosticItem, ComponentMarker } from '../types';
+import { MOCK_ITEMS } from '../data/mockData';
 import { DetectionOverlay } from './DetectionOverlay';
 import { RepairabilityScore } from './RepairabilityScore';
 import { RepairVsReplace } from './RepairVsReplace';
