@@ -32,10 +32,10 @@ export const DetectionOverlay: React.FC<DetectionOverlayProps> = ({
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-1.5 font-mono text-xs text-white">
             <Cpu className="w-4 h-4 text-industrial-orange animate-pulse" />
-            <span className="font-bold uppercase tracking-wider">Visual Telemetry Stream</span>
+            <span className="font-bold uppercase tracking-wider">Visual Inspection</span>
           </div>
           <span className="font-mono text-[11px] text-graphite-muted hidden sm:inline">
-            [1920x1080 · RGB-Thermal Channel]
+            [RGB VISUAL ANALYSIS]
           </span>
         </div>
 

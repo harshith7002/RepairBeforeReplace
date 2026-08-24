@@ -1,13 +1,19 @@
 'use client';
 
 import React from 'react';
-import { AlertOctagon, CheckSquare, Zap, ShieldCheck } from 'lucide-react';
+import { AlertOctagon, CheckSquare, ShieldAlert } from 'lucide-react';
 
 interface SafetyNoticeProps {
   warnings: string[];
+  cautionType?: string;
+  cautionDesc?: string;
 }
 
-export const SafetyNotice: React.FC<SafetyNoticeProps> = ({ warnings }) => {
+export const SafetyNotice: React.FC<SafetyNoticeProps> = ({
+  warnings,
+  cautionType,
+  cautionDesc,
+}) => {
   return (
     <div className="bg-amber-950/40 border-2 border-amber-500/50 rounded-lg p-5 shadow-workstation space-y-4">
       <div className="flex items-center space-x-3 border-b border-amber-500/30 pb-3">
@@ -35,11 +41,11 @@ export const SafetyNotice: React.FC<SafetyNoticeProps> = ({ warnings }) => {
 
       <div className="pt-2 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-slate-400 gap-2 border-t border-amber-500/20">
         <div className="flex items-center space-x-1 text-amber-300">
-          <Zap className="w-3.5 h-3.5 text-amber-400" />
-          <span>High Voltage / Pressurized Liquid Caution</span>
+          <ShieldAlert className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+          <span>{cautionType || 'Contextual Safety Protocol'}</span>
         </div>
         <span className="text-slate-400">
-          If damage involves frayed high-voltage wiring, seek certified technician help.
+          {cautionDesc || 'Stop and consult an authorized service professional if damage exceeds basic maintenance skill level.'}
         </span>
       </div>
     </div>

@@ -198,7 +198,7 @@ export const DiagnosticWorkspace: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Cpu className="w-5 h-5 text-industrial-orange" />
             <span className="font-mono text-xs text-graphite-muted uppercase tracking-widest">
-              Diagnostic Workstation // Live View
+              Visual Repair Assistant
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-1">
@@ -217,7 +217,7 @@ export const DiagnosticWorkspace: React.FC = () => {
           </button>
 
           <span className="px-3 py-1 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-semibold">
-            Status: Active Telemetry
+            Repair Intelligence Active
           </span>
         </div>
       </div>
@@ -235,8 +235,8 @@ export const DiagnosticWorkspace: React.FC = () => {
       {/* Main Split Workstation Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-        {/* LEFT PANEL: Upload & Preset Selector (5 Cols on LG) */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* LEFT PANEL: Upload & Preset Selector (5 Cols on LG, Sticky) */}
+        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-20">
 
           {/* Upload Object Dropzone */}
           <div className="bg-charcoal-800 border border-graphite-border rounded-lg p-6 shadow-workstation space-y-4">
@@ -560,6 +560,9 @@ export const DiagnosticWorkspace: React.FC = () => {
               <RepairVsReplace
                 repairCost={selectedItem.repairCostRange}
                 replaceCost={selectedItem.replaceCost}
+                replaceText={selectedItem.replaceText}
+                replacementDisposalNote={selectedItem.replacementDisposalNote}
+                issueName={selectedItem.primaryIssue.name}
                 potentialSavings={selectedItem.potentialSavings}
                 estimatedTime={selectedItem.estimatedTime}
                 difficulty={selectedItem.difficulty}
@@ -570,7 +573,11 @@ export const DiagnosticWorkspace: React.FC = () => {
               <RepairabilityScore score={selectedItem.repairability} />
 
               {/* Mandatory Safety Prerequisites */}
-              <SafetyNotice warnings={selectedItem.safetyWarnings} />
+              <SafetyNotice
+                warnings={selectedItem.safetyWarnings}
+                cautionType={selectedItem.safetyCautionType}
+                cautionDesc={selectedItem.safetyCautionDesc}
+              />
 
               {/* Environmental Impact Telemetry */}
               <ImpactCalculator impact={selectedItem.impact} />

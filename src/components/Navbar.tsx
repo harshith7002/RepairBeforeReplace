@@ -31,7 +31,7 @@ export const Navbar: React.FC = () => {
                 RepairBeforeReplace
               </span>
               <span className="text-[10px] font-mono tracking-widest text-graphite-muted uppercase -mt-1">
-                Visual Hardware Telemetry
+                Visual Repair Assistant
               </span>
             </div>
           </Link>
@@ -42,7 +42,7 @@ export const Navbar: React.FC = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-industrial-green"></span>
             </span>
             <span className="font-mono text-[11px] text-emerald-400 tracking-wide uppercase">
-              AI Diagnostic Engine v2.4 Ready
+              Repair Intelligence Active
             </span>
           </div>
         </div>

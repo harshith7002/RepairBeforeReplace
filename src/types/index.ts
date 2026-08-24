@@ -26,6 +26,10 @@ export interface RepairabilityBreakdown {
   productAccessibility: number; // 0-100
   totalScore: number;        // 0-100
   verdict: string;
+  partsNote?: string;
+  complexityNote?: string;
+  costRatioNote?: string;
+  accessibilityNote?: string;
 }
 
 export interface RepairStep {
@@ -45,6 +49,7 @@ export interface ImpactMetrics {
   co2SavedKg: number;
   eWasteDivertedPercent: number;
   waterSavedLiters?: number;
+  materialNote?: string;
 }
 
 export type DiagnosticCategory =
@@ -77,11 +82,15 @@ export interface DiagnosticItem {
   markers: ComponentMarker[];
   repairCostRange: string;
   replaceCost: string;
+  replaceText?: string;
+  replacementDisposalNote?: string;
   potentialSavings: string;
   estimatedTime: string;
   difficulty: 'Easy' | 'Moderate' | 'Advanced' | 'Professional Recommended';
   toolsRequired: { name: string; icon?: string; spec?: string }[];
   safetyWarnings: string[];
+  safetyCautionType?: string;
+  safetyCautionDesc?: string;
   repairSteps: RepairStep[];
   impact: ImpactMetrics;
   diagnosedDate: string;

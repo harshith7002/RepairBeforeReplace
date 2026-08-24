@@ -18,7 +18,11 @@ export const WASHING_MACHINE_DEMO: DiagnosticItem = {
     costRatio: 92,
     productAccessibility: 83,
     totalScore: 82,
-    verdict: 'Good candidate for repair'
+    verdict: 'Good candidate for repair',
+    partsNote: 'Standard OEM pump motor & filter caps readily available in regional supply hubs.',
+    complexityNote: 'No specialized soldering required; accessible via standard hand tools.',
+    costRatioNote: 'Repair cost represents under 7% of new replacement appliance retail price.',
+    accessibilityNote: 'Front access panel door allows inspection without disassembling tub framework.'
   },
   primaryIssue: {
     name: 'Drain Pump Obstruction & Filter Clog',
@@ -58,7 +62,7 @@ export const WASHING_MACHINE_DEMO: DiagnosticItem = {
       title: 'Drain Pump Assembly',
       description: 'Noise source localized to impeller chamber. High probability of coin or debris friction.',
       status: 'critical',
-      symptomDetected: 'Cavitation acoustic profile (87dB peak @ 120Hz)'
+      symptomDetected: 'Visual anomaly: Impeller rotation drag'
     },
     {
       id: 'motor-drive',
@@ -93,13 +97,15 @@ export const WASHING_MACHINE_DEMO: DiagnosticItem = {
       width: 14,
       height: 28,
       title: 'Discharge Water Route',
-      description: 'Fluid pressure drops during drain command cycle. Flow velocity 40% below normal baseline.',
+      description: 'Fluid pressure drops during drain command cycle. Flow velocity below normal baseline.',
       status: 'warning',
       symptomDetected: 'Reduced fluid volume rate'
     }
   ],
   repairCostRange: '₹800 – ₹1,500',
   replaceCost: '₹18,000+',
+  replaceText: 'Includes new appliance purchase, delivery & disposal fees',
+  replacementDisposalNote: 'Creates 65+ kg of unnecessary electronic appliance waste',
   potentialSavings: '₹16,500+',
   estimatedTime: '30 – 60 min',
   difficulty: 'Moderate',
@@ -111,11 +117,13 @@ export const WASHING_MACHINE_DEMO: DiagnosticItem = {
     { name: 'Small Cleaning Brush', spec: 'Debris removal' }
   ],
   safetyWarnings: [
-    'ALWAYS disconnect the main 220V power plug from wall outlet before removing any service panel.',
-    'Turn off the hot and cold water supply valves to prevent pressurized backflow.',
-    'Residual water inside lower pump housing may be hot if machine ran a warm cycle recently.',
+    'Disconnect main 220V power plug from wall outlet before removing service panel.',
+    'Turn off hot and cold water supply valves to prevent pressurized backflow.',
+    'Residual water inside lower pump housing may be hot if machine ran warm cycle recently.',
     'Wear cut-resistant gloves when reaching inside lower metal cabinet frames.'
   ],
+  safetyCautionType: 'High Voltage & Pressurized Liquid Caution',
+  safetyCautionDesc: 'If damage involves frayed 220V high-voltage wiring, seek certified technician help.',
   repairSteps: [
     {
       stepNumber: 1,
@@ -197,7 +205,8 @@ export const WASHING_MACHINE_DEMO: DiagnosticItem = {
     materialSavedKg: 26.4,
     co2SavedKg: 84.5,
     eWasteDivertedPercent: 100,
-    waterSavedLiters: 420
+    waterSavedLiters: 420,
+    materialNote: 'Includes steel drum, copper wiring, and molded plastic casing.'
   },
   diagnosedDate: 'Today, 2:45 PM'
 };
@@ -222,7 +231,11 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
       costRatio: 96,
       productAccessibility: 70,
       totalScore: 84,
-      verdict: 'Excellent candidate for repair'
+      verdict: 'Excellent candidate for repair',
+      partsNote: 'Thermal paste & dual replacement radial blower fans readily available online.',
+      complexityNote: 'Requires precision screwdrivers; no micro-soldering needed for thermal maintenance.',
+      costRatioNote: 'Thermal paste maintenance cost is under 1 font percent of new laptop price.',
+      accessibilityNote: 'Bottom aluminum chassis panel removable via 8 captive Torx screws.'
     },
     primaryIssue: {
       name: 'Thermal Paste Desiccation & Dust Accumulation',
@@ -254,7 +267,7 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
         width: 22,
         height: 22,
         title: 'Processor Thermal Interface',
-        description: 'Thermal camera Delta T exceeds 45°C between silicon die and copper heatpipe.',
+        description: 'Thermal interface Delta T exceeds 45°C between silicon die and copper heatpipe.',
         status: 'critical',
         symptomDetected: 'Dry compound void areas'
       },
@@ -273,6 +286,8 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
     ],
     repairCostRange: '₹450 – ₹900',
     replaceCost: '₹65,000+',
+    replaceText: 'Includes new high-performance laptop purchase & data migration',
+    replacementDisposalNote: 'Creates 2.1 kg of lithium battery & e-waste electronics scrap',
     potentialSavings: '₹64,100+',
     estimatedTime: '25 – 40 min',
     difficulty: 'Moderate',
@@ -283,9 +298,11 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
       { name: 'Plastic Spudger / Pry Tool', spec: 'Safety clip release' }
     ],
     safetyWarnings: [
-      'ALWAYS disconnect internal battery connector clip before touching motherboard circuits.',
-      'Use ESD anti-static wrist strap or touch grounded metal surface before handling PCB.'
+      'ALWAYS disconnect internal battery connector harness clip before touching motherboard circuits.',
+      'Touch grounded metal surface before handling PCB to prevent static discharge ESD damage.'
     ],
+    safetyCautionType: 'Electrostatic Discharge & Battery Caution',
+    safetyCautionDesc: 'If battery casing appears swollen or punctured, stop immediately and consult an authorized service center.',
     repairSteps: [
       {
         stepNumber: 1,
@@ -325,7 +342,8 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
     impact: {
       materialSavedKg: 2.1,
       co2SavedKg: 310.0,
-      eWasteDivertedPercent: 100
+      eWasteDivertedPercent: 100,
+      materialNote: 'Includes aluminum chassis, copper heatsinks, motherboard silicon, and lithium battery.'
     },
     diagnosedDate: 'Yesterday'
   },
@@ -342,18 +360,22 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
       'Clicking noise from rear derailleur jockey wheel'
     ],
     repairability: {
-      partsAvailability: 98,
-      repairComplexity: 85,
+      partsAvailability: 96,
+      repairComplexity: 87,
       costRatio: 98,
-      productAccessibility: 95,
-      totalScore: 94,
-      verdict: 'Ideal candidate for DIY repair'
+      productAccessibility: 92,
+      totalScore: 93,
+      verdict: 'Ideal candidate for DIY repair',
+      partsNote: 'Standard Shimano/SRAM 10-speed shift cable & barrel adjusters widely available in local bike shops.',
+      complexityNote: 'No specialized tools needed; adjustable using standard 4mm/5mm hex Allen wrenches.',
+      costRatioNote: 'Cable adjustment outlay is under 2% of comparable bicycle replacement price.',
+      accessibilityNote: 'Rear derailleur barrel adjuster is externally exposed and easily accessible.'
     },
     primaryIssue: {
-      name: 'Shift Cable Barrel Tension Slack & Derailleur Hanger Alignment',
-      confidence: 94,
+      name: 'Shift Cable Barrel Tension Slack & Derailleur Alignment',
+      confidence: 95,
       description: 'Cable stretch over time has caused indexing misalignment between shifter clicks and cassette cog spacing.',
-      rootCause: 'Normal steel cable bedding-in and slight H-limit screw drift.'
+      rootCause: 'Normal steel cable bedding-in and slight limit-screw drift.'
     },
     secondaryPossibilities: [
       {
@@ -379,12 +401,27 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
         width: 18,
         height: 22,
         title: 'Indexing Cable Adjuster',
-        description: 'Cable tension insufficient by 1.5 full barrel turns.',
-        status: 'critical'
+        description: 'Cable tension insufficient by roughly 1.5 full barrel turns.',
+        status: 'critical',
+        symptomDetected: 'Visual anomaly: Cable slack'
+      },
+      {
+        id: 'drive-chain',
+        label: 'DRIVE CHAIN',
+        category: 'component',
+        x: 48,
+        y: 58,
+        width: 25,
+        height: 18,
+        title: 'Chain & Chainstay',
+        description: 'Chain pitch wear within normal 0.75% stretch tolerance limit.',
+        status: 'nominal'
       }
     ],
     repairCostRange: '₹150 – ₹400',
     replaceCost: '₹22,000+',
+    replaceText: 'Includes new bicycle or complete drivetrain replacement',
+    replacementDisposalNote: 'Creates 14+ kg of unnecessary metal & rubber scrap waste',
     potentialSavings: '₹21,600+',
     estimatedTime: '15 – 25 min',
     difficulty: 'Easy',
@@ -394,8 +431,13 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
       { name: 'Clean Rag', spec: 'Chain wipe down' }
     ],
     safetyWarnings: [
-      'Keep fingers clear of turning chain teeth and rear wheel spokes when spinning pedals by hand.'
+      'Keep fingers clear of turning chain and rear wheel spokes while spinning pedals by hand.',
+      'Ensure bicycle is securely mounted on repair stand or turned upside down before shifting.',
+      'Shift into smallest cassette cog before adjusting cable tension.',
+      'Check rear wheel quick-release axle skewer is fully clamped.'
     ],
+    safetyCautionType: 'Mechanical Pinch Point Caution',
+    safetyCautionDesc: 'Professional bike shop service recommended if frame, wheel rim, or hydraulic brake rotor damage is detected.',
     repairSteps: [
       {
         stepNumber: 1,
@@ -412,7 +454,8 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
     impact: {
       materialSavedKg: 14.2,
       co2SavedKg: 58.0,
-      eWasteDivertedPercent: 100
+      eWasteDivertedPercent: 100,
+      materialNote: 'Includes aluminum alloy frame, steel cassette cogs, rubber tires, and cable housing.'
     },
     diagnosedDate: '3 days ago'
   },
@@ -434,7 +477,11 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
       costRatio: 90,
       productAccessibility: 88,
       totalScore: 84,
-      verdict: 'Good candidate for repair'
+      verdict: 'Good candidate for repair',
+      partsNote: 'Replacement motor carbon brush blocks widely available online.',
+      complexityNote: 'Simple cap removal; no gear housing disassembly required.',
+      costRatioNote: 'Carbon brush set costs under 5% of new drill kit replacement.',
+      accessibilityNote: 'Rear motor cap screws provide direct access to brush holders.'
     },
     primaryIssue: {
       name: 'Worn Motor Carbon Brushes & Commutator Oxidation',
@@ -461,11 +508,14 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
         height: 20,
         title: 'Brush Holder Assembly',
         description: 'Brush spring pressure low. Replace dual carbon block pair.',
-        status: 'critical'
+        status: 'critical',
+        symptomDetected: 'Visual anomaly: Commutator sparking'
       }
     ],
     repairCostRange: '₹350 – ₹700',
     replaceCost: '₹8,500',
+    replaceText: 'Includes new 18V rotary drill purchase & battery kit',
+    replacementDisposalNote: 'Creates 3.8 kg of heavy metal tool motor scrap',
     potentialSavings: '₹7,800+',
     estimatedTime: '20 – 30 min',
     difficulty: 'Easy',
@@ -474,8 +524,11 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
       { name: 'Replacement Carbon Brush Pair', spec: 'OEM matching spec' }
     ],
     safetyWarnings: [
-      'Remove 18V Li-ion battery pack BEFORE unscrewing tool housing.'
+      'ALWAYS remove 18V Li-ion battery pack BEFORE unscrewing tool housing.',
+      'Wear safety glasses to prevent carbon dust contact during brush cleaning.'
     ],
+    safetyCautionType: 'Battery Isolation Caution',
+    safetyCautionDesc: 'Never operate power tool casing opened with battery connected.',
     repairSteps: [
       {
         stepNumber: 1,
@@ -492,7 +545,8 @@ export const MOCK_ITEMS: DiagnosticItem[] = [
     impact: {
       materialSavedKg: 3.8,
       co2SavedKg: 42.0,
-      eWasteDivertedPercent: 100
+      eWasteDivertedPercent: 100,
+      materialNote: 'Includes steel chuck, copper motor winding, and fiberglass housing.'
     },
     diagnosedDate: 'Last week'
   }

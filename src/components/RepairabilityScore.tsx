@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { RepairabilityBreakdown } from '../types';
-import { ShieldCheck, HelpCircle, CheckCircle2, Sliders } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Sliders } from 'lucide-react';
 
 interface RepairabilityScoreProps {
   score: RepairabilityBreakdown;
@@ -13,12 +13,6 @@ export const RepairabilityScore: React.FC<RepairabilityScoreProps> = ({
   score,
   compact = false,
 }) => {
-  const getScoreColor = (value: number) => {
-    if (value >= 80) return 'text-emerald-400 border-emerald-500/40 bg-emerald-950/60';
-    if (value >= 60) return 'text-amber-400 border-amber-500/40 bg-amber-950/60';
-    return 'text-orange-400 border-orange-500/40 bg-orange-950/60';
-  };
-
   const getBarColor = (value: number) => {
     if (value >= 80) return 'bg-emerald-500';
     if (value >= 60) return 'bg-amber-500';
@@ -97,7 +91,7 @@ export const RepairabilityScore: React.FC<RepairabilityScoreProps> = ({
             />
           </div>
           <p className="text-[11px] text-slate-400 mt-1.5">
-            Standard OEM pump motor & filter caps readily available in regional supply hubs.
+            {score.partsNote || 'Standard OEM replacement components readily available via hardware suppliers.'}
           </p>
         </div>
 
@@ -114,7 +108,7 @@ export const RepairabilityScore: React.FC<RepairabilityScoreProps> = ({
             />
           </div>
           <p className="text-[11px] text-slate-400 mt-1.5">
-            No specialized soldering required; accessible via standard hand tools.
+            {score.complexityNote || 'Manageable procedure executable using standard household hand tools.'}
           </p>
         </div>
 
@@ -131,7 +125,7 @@ export const RepairabilityScore: React.FC<RepairabilityScoreProps> = ({
             />
           </div>
           <p className="text-[11px] text-slate-400 mt-1.5">
-            Repair cost represents under 7% of new replacement appliance retail price.
+            {score.costRatioNote || 'Repair cost represents a small fraction of full unit replacement price.'}
           </p>
         </div>
 
@@ -148,7 +142,7 @@ export const RepairabilityScore: React.FC<RepairabilityScoreProps> = ({
             />
           </div>
           <p className="text-[11px] text-slate-400 mt-1.5">
-            Front access panel door allows inspection without disassembling tub framework.
+            {score.accessibilityNote || 'Component housing allows inspection without complete teardown.'}
           </p>
         </div>
 
