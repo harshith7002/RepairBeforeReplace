@@ -64,7 +64,7 @@ export const RepairVsReplace: React.FC<RepairVsReplaceProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* REPAIR CARD (Recommended) */}
-        <div className="bg-charcoal-900 rounded-lg border-2 border-emerald-500/60 p-6 relative overflow-hidden shadow-hud flex flex-col justify-between">
+        <div className="bg-charcoal-900 rounded-lg border-2 border-emerald-500/60 p-6 relative overflow-hidden shadow-hud shadow-[0_0_20px_rgba(16,185,129,0.15)] flex flex-col justify-between transition-all hover:border-emerald-400">
           <div className="absolute top-0 right-0 bg-emerald-600 text-white font-mono text-[10px] font-bold uppercase px-3 py-1 rounded-bl">
             Recommended Action
           </div>

@@ -59,7 +59,7 @@ export const RepairabilityScore: React.FC<RepairabilityScoreProps> = ({
           </h3>
         </div>
 
-        <div className="flex items-center space-x-3 bg-charcoal-900 px-4 py-2 rounded-lg border border-graphite-border">
+        <div className="flex items-center space-x-3 bg-charcoal-900 px-4 py-2 rounded-lg border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
           <div className="text-right">
             <div className="flex items-baseline justify-end space-x-1">
               <span className="text-3xl font-mono font-extrabold text-emerald-400">

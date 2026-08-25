@@ -220,8 +220,9 @@ export const DiagnosticWorkspace: React.FC = () => {
             <span>Re-run Inspection</span>
           </button>
 
-          <span className="px-3 py-1 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-semibold">
-            Repair Intelligence Active
+          <span className="px-3 py-1 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-semibold flex items-center space-x-1.5 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Repair Intelligence Active</span>
           </span>
         </div>
       </div>
