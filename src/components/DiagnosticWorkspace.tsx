@@ -478,8 +478,8 @@ export const DiagnosticWorkspace: React.FC = () => {
                   Stage 0{analysisStep} / 03: Feature Extraction
                 </span>
                 <h3 className="text-xl font-bold text-white">
-                  {analysisStep === 1 && 'Ingesting Hardware Image & Thermal Maps...'}
-                  {analysisStep === 2 && 'Segmenting Components & Acoustic Profiling...'}
+                  {analysisStep === 1 && 'Ingesting Hardware Image & Visual Analysis...'}
+                  {analysisStep === 2 && 'Segmenting Components & Structural Analysis...'}
                   {analysisStep === 3 && 'Correlating Failure Knowledgebase & Scoring...'}
                 </h3>
                 <p className="font-mono text-xs text-slate-400">

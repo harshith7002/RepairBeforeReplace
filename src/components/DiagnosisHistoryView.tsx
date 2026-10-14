@@ -77,7 +77,7 @@ export const DiagnosisHistoryView: React.FC = () => {
           Diagnosis History
         </h1>
         <p className="text-slate-400 text-sm max-w-2xl">
-          Chronological telemetry log of all physical object inspections, diagnostic results, repairability scores, and financial savings recorded on this workstation.
+          Chronological history log of all physical object inspections, diagnostic results, repairability scores, and financial savings recorded on this workstation.
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export const DiagnosisHistoryView: React.FC = () => {
       <div className="bg-charcoal-800 border border-graphite-border rounded-lg p-6 shadow-workstation space-y-6">
         <div className="flex items-center justify-between border-b border-graphite-border pb-4">
           <span className="font-mono text-xs text-slate-300 font-bold uppercase tracking-wider">
-            Chronological Telemetry Entries ({items.length})
+            Chronological Inspection Records ({items.length})
           </span>
           {stats && (
             <span className="font-mono text-[11px] text-emerald-400 font-semibold">
@@ -196,7 +196,7 @@ export const DiagnosisHistoryView: React.FC = () => {
             <div className="flex items-center justify-between border-b border-graphite-border pb-4">
               <div>
                 <span className="font-mono text-xs text-industrial-orange uppercase font-bold">
-                  Diagnostic Telemetry Record
+                  Diagnostic Inspection Record
                 </span>
                 <h2 className="text-xl font-bold text-white">{selectedHistoryItem.name}</h2>
               </div>

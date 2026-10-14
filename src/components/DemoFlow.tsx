@@ -42,7 +42,7 @@ export const DemoFlow: React.FC = () => {
 
   const stepTitles = [
     '01. Upload Hardware Object',
-    '02. AI Visual Telemetry Scan',
+    '02. AI Visual Inspection Scan',
     '03. Repairability Score Engine',
     '04. Repair vs Replace Savings',
     '05. Step-by-Step Guided Repair',
@@ -149,7 +149,7 @@ export const DemoFlow: React.FC = () => {
               </div>
 
               <div className="space-y-4 bg-charcoal-900 p-6 rounded-lg border border-graphite-border">
-                <h3 className="font-bold text-lg text-white">Input Telemetry Verified</h3>
+                <h3 className="font-bold text-lg text-white">Visual Input Verified</h3>
                 <ul className="space-y-2 text-xs text-slate-300 font-mono">
                   <li className="flex items-center space-x-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -157,7 +157,7 @@ export const DemoFlow: React.FC = () => {
                   </li>
                   <li className="flex items-center space-x-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Resolution: 1920x1080 · 60fps acoustic stream</span>
+                    <span>Resolution: 1920x1080 · High-Res RGB frame</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -169,7 +169,7 @@ export const DemoFlow: React.FC = () => {
           </div>
         )}
 
-        {/* STEP 02: Visual Telemetry Scan */}
+        {/* STEP 02: Visual Inspection Scan */}
         {currentStep === 2 && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <div className="border-b border-graphite-border pb-4 flex justify-between items-center">
@@ -177,7 +177,7 @@ export const DemoFlow: React.FC = () => {
                 <span className="font-mono text-xs text-industrial-orange uppercase font-bold tracking-widest">
                   Stage 02
                 </span>
-                <h2 className="text-2xl font-bold text-white">AI Visual Telemetry Scan</h2>
+                <h2 className="text-2xl font-bold text-white">AI Visual Inspection Scan</h2>
               </div>
               <span className="px-3 py-1 rounded bg-orange-950 border border-orange-500/40 text-orange-400 font-mono text-xs font-bold">
                 Issue: {item.primaryIssue.name} (87% confidence)
@@ -219,6 +219,9 @@ export const DemoFlow: React.FC = () => {
             <RepairVsReplace
               repairCost={item.repairCostRange}
               replaceCost={item.replaceCost}
+              replaceText={item.replaceText}
+              replacementDisposalNote={item.replacementDisposalNote}
+              issueName={item.primaryIssue.name}
               potentialSavings={item.potentialSavings}
               estimatedTime={item.estimatedTime}
               difficulty={item.difficulty}

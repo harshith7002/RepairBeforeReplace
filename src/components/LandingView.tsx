@@ -32,7 +32,7 @@ export const LandingView: React.FC = () => {
       step: '02',
       title: 'We inspect it',
       subtitle: 'Segment hardware components',
-      desc: 'AI computer-vision segments physical assemblies, thermal gradients, and acoustic signatures.',
+      desc: 'AI computer-vision inspects physical assemblies, wear patterns, and mechanical alignment.',
       badge: 'Neural Segmentation'
     },
     {
@@ -40,7 +40,7 @@ export const LandingView: React.FC = () => {
       title: 'We diagnose it',
       subtitle: 'Rank root cause probability',
       desc: 'Calculates primary failure mode, confidence probability, and transparent 0-100 repairability index.',
-      badge: 'Diagnostic Telemetry'
+      badge: 'Diagnostic Analysis'
     },
     {
       step: '04',
@@ -71,7 +71,7 @@ export const LandingView: React.FC = () => {
           <div className="lg:col-span-5 space-y-6">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-charcoal-800 border border-graphite-border text-xs font-mono text-amber-400">
               <Sparkles className="w-3.5 h-3.5 text-industrial-orange animate-pulse" />
-              <span>AI Visual Hardware Telemetry</span>
+              <span>AI Visual Repair Assistant</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
@@ -118,7 +118,7 @@ export const LandingView: React.FC = () => {
               <div className="flex items-center justify-between border-b border-graphite-border pb-3 text-xs font-mono text-slate-400">
                 <div className="flex items-center space-x-2 text-white font-bold">
                   <Activity className="w-4 h-4 text-industrial-orange animate-pulse" />
-                  <span>Live Workstation Hero Telemetry</span>
+                  <span>Live Inspection Preview</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
@@ -236,14 +236,14 @@ export const LandingView: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
               <div className="space-y-3">
                 <span className="px-2.5 py-1 rounded bg-orange-950 border border-orange-500/40 font-mono text-xs font-bold text-orange-400">
-                  Step 0{activeWorkflowStep} Output Telemetry
+                  Step 0{activeWorkflowStep} Output
                 </span>
                 <h3 className="text-xl font-bold text-white">
-                  {activeWorkflowStep === 1 && "Ingesting High-Resolution Hardware Photo & Acoustic Video"}
+                  {activeWorkflowStep === 1 && "Ingesting High-Resolution Hardware Photo"}
                   {activeWorkflowStep === 2 && "Segmenting Motors, Impellers, Valves & Structural Castings"}
-                  {activeWorkflowStep === 3 && "Correlating Acoustic Vibration Profiles with Known Failure Nodes"}
+                  {activeWorkflowStep === 3 && "Correlating Visual Wear Patterns with Known Failure Modes"}
                   {activeWorkflowStep === 4 && "Generating Interactive 3D Step Manual & Tool Requirement List"}
-                  {activeWorkflowStep === 5 && "Calculating ₹16,500 Net Cost Savings vs Replacement Unit"}
+                  {activeWorkflowStep === 5 && "Calculating Net Cost Savings vs Replacement Unit"}
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
                   {workflowSteps[activeWorkflowStep - 1].desc}
@@ -292,6 +292,9 @@ export const LandingView: React.FC = () => {
         <RepairVsReplace
           repairCost={demoItem.repairCostRange}
           replaceCost={demoItem.replaceCost}
+          replaceText={demoItem.replaceText}
+          replacementDisposalNote={demoItem.replacementDisposalNote}
+          issueName={demoItem.primaryIssue.name}
           potentialSavings={demoItem.potentialSavings}
           estimatedTime={demoItem.estimatedTime}
           difficulty={demoItem.difficulty}
@@ -319,7 +322,7 @@ export const LandingView: React.FC = () => {
                 Technical Pipeline
               </span>
               <h2 className="text-2xl font-bold text-white tracking-tight mt-0.5">
-                How AI Hardware Telemetry Works
+                How AI Repair Intelligence Works
               </h2>
             </div>
             <span className="px-3 py-1 rounded bg-charcoal-900 border border-graphite-border text-xs font-mono text-slate-300">
@@ -330,10 +333,10 @@ export const LandingView: React.FC = () => {
           {/* Horizontal Technical Pipeline Diagram */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 text-center">
             {[
-              { title: 'Image / Video', desc: 'RGB-Thermal input' },
-              { title: 'Object Detection', desc: 'Appliance classifier' },
+              { title: 'Image Upload', desc: 'RGB visual input' },
+              { title: 'Object Detection', desc: 'Hardware classifier' },
               { title: 'Component Identification', desc: 'Sub-assembly map' },
-              { title: 'Symptom Extraction', desc: 'Acoustic & visual' },
+              { title: 'Symptom Extraction', desc: 'Visual anomaly analysis' },
               { title: 'Knowledge Retrieval', desc: 'Service manual DB' },
               { title: 'Recommendation', desc: 'Repairability index' },
               { title: 'Interactive Guide', desc: '5-step manual' },

@@ -90,7 +90,7 @@ export const Footer: React.FC = () => {
               Hackathon Prototype Disclaimer
             </span>
             <p className="text-[11px] leading-relaxed text-slate-400">
-              RepairBeforeReplace provides computer vision telemetry estimates for informational purposes. Always disconnect high-voltage equipment from main power and verify recommendations against manufacturer documentation before servicing.
+              RepairBeforeReplace provides computer vision repair estimates for informational purposes. Always disconnect high-voltage equipment from main power and verify recommendations against manufacturer documentation before servicing.
             </p>
           </div>
 
@@ -102,7 +102,7 @@ export const Footer: React.FC = () => {
             © {new Date().getFullYear()} RepairBeforeReplace. Production Hackathon Build.
           </div>
           <div className="mt-2 sm:mt-0 flex space-x-4">
-            <span>Hardware Telemetry Framework v2.4</span>
+            <span>Repair Intelligence Framework v2.4</span>
             <span>·</span>
             <span>Next.js 14 & React 18</span>
           </div>
